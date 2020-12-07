@@ -1,0 +1,1340 @@
+<!DOCTYPE html>
+
+<!--Version 1.0.2 🦄 
+
+-->
+<html lang="en" >
+<head>
+<meta charset="UTF-8" name="format-detection" content="telephone=no">
+<title>Slytherin Decoder</title>
+<link rel="preconnect" href="https://fonts.gstatic.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@300;400&display=swap" rel="stylesheet">
+<style>
+body{
+    width: 92vw;
+    max-width: 92vw;
+    min-width: 730px;
+}
+
+#container{
+	font-family: Consolas, "Andale Mono", "Lucida Console", "Lucida Sans Typewriter", Monaco, "Courier New", "monospace";
+}
+
+.outputClass{
+    font-family: 'Source Code Pro', monospace;
+}
+
+.grid-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-template-rows: 1fr;
+  gap: 10px 10px;
+  grid-template-areas: "areaA areaB areaC areaD";
+  word-wrap: break-word;
+}
+
+.areaA { 
+	grid-area: areaA; 
+	width: 23vw; max-width: 23vw;}
+.areaB { 
+	grid-area: areaB;
+	width: 23vw; 
+	max-width: 23vw; }
+.areaC { 
+	grid-area: areaC;
+	width: 23vw; 
+	max-width: 23vw;}
+.areaD { 
+	grid-area: areaD;
+	width: 23vw;
+	max-width: 23vw;
+	}
+
+#input1{
+	/*width: calc(100% - 20px);*/
+	width: 100%;
+    height: 20px;
+}
+
+.affineBoxes{
+	height: 20px; 
+	width: 20px;
+	margin-top: 18px;
+}
+
+/*Tooltip CSS*/
+
+.tooltip {
+  position: relative;
+  display: inline-block;
+}
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 420px;
+  background-color: #555;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+  position: absolute;
+  z-index: 1;
+  top: 100%;
+  left: 50%;
+  margin-left: -60px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.tooltip:hover .tooltiptext {
+  pointer-events: none;
+  visibility: visible;
+  opacity: 1;
+}
+
+h3,h4{
+    word-wrap: normal; 
+}
+
+#help{
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    margin-left: 15px;
+    border-style:solid;
+    padding: 2px;
+}
+
+#helpDiv:hover{
+    cursor: pointer;
+}
+
+#helpPadding{
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    height: 50px;
+    width: 24vw;
+    max-width: 24vw;
+    background-color: white;
+    z-index: 1;
+
+}
+
+
+</style>
+</head>
+
+
+<body>
+<div id="container"> 
+
+    <input type="text" id="input1" placeholder="Input Cipher Code" autofocus><br>
+
+    <div id="helpPadding">
+    <div id="helpDiv" onclick="helpClick()">
+        <p id="help">Help</p>
+    </div>
+    </div>
+
+<!-- <button id="help" onclick="helpClick()">Help</button> -->
+
+<div class="grid-container">
+  <div class="areaA">
+
+    <div id="caesar">
+    <h3>Caesar</h3>
+    <span id="output" class="outputClass"></span>
+    </div>
+    </div>
+    
+  <div id="areaB_id" class="areaB">
+
+    <div id="vigenere">
+
+    <h3>Vigenere</h3>
+
+        <input type="text" id="key" placeholder="Enter Key"><br><br>
+    <h4>Encoded:</h4>
+        <span id="vigOutput" class="outputClass"></span><br>
+    <h4>Decoded:</h4>
+        <span id="vigOutput2" class="outputClass"></span><br>
+
+    <hr>
+
+	<h4>Autokey encoded:</h4>
+	<span id="autokeyEncoded" class="outputClass"></span><br>
+	<h4>Autokey Decoded:</h4>
+	<span id="autokeyDecoded" class="outputClass"></span><br>
+
+	<hr>
+
+	<h4>Beaufort:</h4>
+	<span id="beaufortEncoded"></span><br>
+    </div>
+    </div>
+    
+    <div class="areaC">
+ 
+    <div id="Hex">
+        <h3>Hexadecimal</h3>
+        <h4>Two digit hex:</h4>
+            <span id="hexOutput1" class="outputClass"></span>
+    		
+    	<h4 id="method1a">Multi-digit hex:</h4>
+    		<span id="hexb" class="outputClass"></span>
+    	
+    	<h4 id="Method2">Numerical hex:</h4>
+            <span id="hexNum1Output" class="outputClass"></span><br>
+            <span id="hexNum2Output" class="outputClass"></span>
+
+        <hr>
+
+    </div>
+
+	   <h3 id="Dec">Decimal</h3>
+        <span id="decOutput1" class="outputClass"></span>
+
+	<hr>
+	
+
+	   <h3 id="Oct">Octal</h3>
+        <span id="octOutput1" class="outputClass"></span>
+
+    <hr>
+
+	<div id="morse">
+            <h3 id="morseHeading">Morse</h3>
+
+            <span id="morseHeading1"></span><br>
+		    <span id="morseOutput" class="outputClass"></span><br><br>
+            <span id="morseHeading2"></span><br>
+            <span id="morse2Output" class="outputClass"></span>
+	</div>
+
+
+	</div>
+  
+    <div class="areaD">
+		<h3 id="A1Z26">A1Z26</h3>
+		<span id="A1Z26Output" class="outputClass"></span><br>
+
+	<hr>
+		
+	<h3 id="Atbash">Atbash</h3>
+	<span id="AtbashOutput" class="outputClass"></span><br>
+
+	<hr>
+		
+	
+		<h3 id="Bacon">Bacon</h3>
+		<span id="baconOutput1" class="outputClass"></span><br><br>
+		<span id="baconOutput2" class="outputClass"></span><br>
+
+	<hr>
+		
+		<h3 id="ASCII">ASCII</h3>
+		<span id="ASCIIOutput1" class="outputClass"></span><br><br>
+		<span id="ASCIIOutput2" class="outputClass"></span><br><br>
+
+	<hr>
+
+        <div id="affineDiv">
+		  <h3 id="affineHeading">Affine</h3>
+<!-- 		<h4 style="float: left;">a: </h4><input type="text" id="affineA" placeholder="Enter a">
+		<h4 style="float: left;">b: </h4><input type="text" id="affineB" placeholder="Enter b"><br> -->
+
+		  <div style="display:flex;">
+    		<h4>a: </h4>
+    		<input class="affineBoxes" type="text" id="affineA">
+    		<h4 style="margin-left: 10px">b: </h4>
+    		<input class="affineBoxes" type="text" id="affineB">
+		  </div>
+
+            <div id="affineOutputs">
+		      <h4>Encoded: </h4>
+		      <span id="affineEncodedOutput" class="outputClass"></span>
+		      <h4>Decoded: </h4>
+		      <span id="affineDecodedOutput" class="outputClass"></span><br><hr>
+            </div>
+        </div>
+
+		<h3 id="FormatString">Separate String Tool</h3>
+		<input type="text" id="separator" placeholder="Enter Separator" style="width:100px"><br><br>
+		<span id="FormatStringOutput" class="outputClass"></span><br>
+	</div>
+</div>
+</div>
+   
+<script>
+
+//Global variables
+var numericalHexGreyState = false;
+
+//Global functions
+
+function helpClick(){
+    window.open("help.html");
+}
+
+function greyout(id){
+	document.getElementById(id).style.color = "lightgrey";
+}
+function blackout(id){
+    document.getElementById(id).style.color = "black";
+}
+
+function reverseString(str) {
+    return str.split("").reverse().join("");
+}
+
+function mod(n, m) {
+  return ((n % m) + m) % m;
+}
+
+function arraysEqual(a1,a2) {
+    /* WARNING: arrays must not contain {objects} or behavior may be undefined */
+    return JSON.stringify(a1)==JSON.stringify(a2);
+}
+	
+// Cipher Functions
+	
+function shiftChar(c,n) {
+    var alphabet = "abcdefghijklmnopqrstuvwxyz";
+    var ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    if (!alphabet.includes(c) && !ALPHABET.includes(c)) {
+        return c
+    
+	}else {
+    
+    	var C = c.toUpperCase();
+    	if (C == c){
+        	var U = "true";
+    	}else{
+        	var U = "false"
+    	}
+    
+    	var index  = ALPHABET.indexOf(C);
+    	var nindex = mod((index + n),26);
+    	if (U == "true"){
+        	return ALPHABET[nindex]
+    	} 
+    	if (U == "false"){
+        	return alphabet[nindex] 
+    } 
+	}    
+}
+
+function shiftWord(w,n){
+    if (w == "") {
+        return ""
+} else {
+    var str = "";
+    var i;
+    for (i = 0; i < w.length; i++) {
+        str += shiftChar(w[i],n);
+    }
+    return str
+}
+}
+    
+function grandShift(w){
+    blackout("caesar");
+	if (w == ""){
+		return ""
+	}
+	if (w.match(/[a-zA-Z]/g)) { //If any letters exists
+    	var ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    	str = "";
+    	var i;
+    	for (i = 0; i < 27; i++) {
+        	if (i % 26 <10){
+            	var space = " ";
+        	}else{
+            	var space = "";
+        	}
+            num = ALPHABET[i%26]+(i%26).toString(10)+space+": "
+        	str += num.bold()+shiftWord(w,i)+"<br>";
+    	}
+    return str
+	}
+	if (w.match(/[0-9]/g)){//If numbers exists and letters don't
+		return grandShift(A1Z26(w))
+	}else{//else symbols
+        greyout("caesar");
+		return ""
+	}
+}
+
+function vig(w,key){
+    document.getElementById("areaB_id").style.color = "black"
+    if (w.match(/[a-z]/gi) == null && w != ""){
+        document.getElementById("areaB_id").style.color = "lightgrey"
+        return ""
+    }
+    var alphabet = "abcdefghijklmnopqrstuvwxyz";
+    var key = key.toLowerCase();
+    var key = key.replace(/[^a-z]/gi,'');
+    if(w == ""){
+        return ""
+    }if(key == ""){
+        return ""
+    }else{
+        var str = "";
+        var n = 0;
+        for (i = 0; i < w.length; i++){
+            if(w[i] == w[i].replace(/[^a-z]/gi,'')){
+                var k = key[(i-n) % key.length];
+                var kn = alphabet.indexOf(k);
+                str += shiftChar(w[i],kn);
+            }else{
+                str += w[i];
+                n += 1;
+            }
+        }
+        return str  
+    }
+}
+    
+function vig2(w,key){
+    var alphabet = "abcdefghijklmnopqrstuvwxyz";
+    var key = key.toLowerCase();
+    var key = key.replace(/[^a-z]/gi,'');
+    if(w == ""){
+        return ""
+    }if(key == ""){
+        return ""
+    }else{
+        var str = "";
+        var n = 0;
+        for (i = 0; i < w.length; i++){
+            if(w[i] == w[i].replace(/[^a-z]/gi,'')){
+                var k = key[(i-n) % key.length];
+                var kn = alphabet.indexOf(k);
+                str += shiftChar(w[i],26 - kn);
+            }else{
+                str += w[i];
+                n += 1;
+            }
+        }
+        return str  
+    }
+}
+	
+	
+function autokeyEncode(input, key){
+	return vig(input, key+input)
+}
+	
+
+function autokeyDecode(input,key){
+	if (key == ""){
+		return ""
+	}else{
+	var key = key.toLowerCase();
+    var key = key.replace(/[^a-z]/gi,'');
+	var alphabet = "abcdefghijklmnopqrstuvwxyz";
+	var input2 = input.toLowerCase();
+	var input2 = input2.replace(/[^a-z]+/gi,'');
+	var output = vig2(input2, key).substr(0,key.length);
+	
+	for (i = key.length; i < input2.length; i++){
+		var kn = alphabet.indexOf(output[i-key.length])
+		output += shiftChar(input2[i], 26-kn)
+	}
+	}
+	var str = "";
+	n = 0;
+	for (i = 0; i < input.length; i++){
+		if (input[i].match(/[a-z]/g) != null){ //if lowercase
+			str += output[i-n];
+		}
+		if (input[i].match(/[A-Z]/g) != null){ //if uppercase
+			str += output[i-n].toUpperCase();
+		}
+		if (input[i].match(/[a-zA-Z]/g) == null){
+			str += input[i];
+			n += 1;
+		}
+	}
+	return str
+}
+
+function beaufortEncode(input,key){
+    var alphabet = "abcdefghijklmnopqrstuvwxyz";
+    var ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    var key = key.toLowerCase();
+    var key = key.replace(/[^a-z]/gi,'');
+    var lowerInput = input.toLowerCase();
+    if(input == ""){
+        return ""
+    }if(key == ""){
+        return ""
+    }else{
+        var str = "";
+        var n = 0;
+        for (i = 0; i < input.length; i++){
+            if(input[i] == input[i].replace(/[^a-z]/gi,'')){
+
+                var k  = key[(i-n) % key.length];
+                var ki = alphabet.indexOf(k);
+                var mi = alphabet.indexOf(lowerInput[i]);
+                var ci = mod((ki - mi),26)
+                if (input[i] == input[i].toLowerCase()){
+                	str += alphabet[ci];
+                }else{
+                	str += ALPHABET[ci];
+                }
+            }else{
+                str += input[i];
+                n += 1;
+            }
+        }
+        return str  
+    }
+}
+	
+// This hex function reads off full bytes at a time
+
+function hex2a(hexx){
+    var hex = hexx.toString();
+    var str = '';
+    for (var i = 0; (i < hex.length && hex.substr(i, 2) !== '00'); i += 2)
+        str += String.fromCharCode(parseInt(hex.substr(i, 2), 16));
+    return str;
+}
+	
+//Works like a dream!!!
+function hex2b(input){
+	if (input == ""){return ""};
+	var H = input.match(/[0-9a-fA-F]+/gi);
+	if (H == null){return ""};
+	var str = "";
+	for (i = 0; i < H.length; i++){
+		str += String.fromCharCode(parseInt(H[i],16));
+	}return str
+}
+
+function hex1(input){
+    blackout('Hex');
+	if (input==""){
+        return ""
+    }else{
+        if (input.match(/[0-9a-f]/gi) == null){
+            greyout('Hex')
+            var numericalHexGreyState = true;
+            return ""
+        }
+        var H2 = input.replace(/[^0-9a-fA-F]+/gi,'');
+        return hex2a(H2);
+    }
+
+
+}
+
+function hexNum1(input){
+    if (input == ""){
+        return ""
+    }else{
+    var H = input.match(/\d+/g);
+	if (H == null){return ""}
+    var i;
+    str = "";
+    for (i = 0; i < H.length; i++){
+        if (H[i] > 15){
+			return ""
+        }else{
+            str += parseInt(H[i], 10).toString(16);
+        }
+    }
+    return str +": "+hex2a(str)
+    }
+    }
+
+function hexNum2(input){
+    if (input == ""){
+        blackout('Method2')
+        return ""
+    }else{
+        if (input.match(/\d/gi) == null){
+            greyout('Method2');
+            return ""
+        }else{
+            blackout('Method2');
+            var H = input.match(/\d+/g);
+            if (H == null){return ""}
+            var i;
+            str = "";
+            for (i = 0; i < H.length; i++){
+                if (H[i] > 16 || H[i] == 0){
+                    if (H[i] > 16){
+                        greyout('Method2');
+                    }
+                    return ""
+                }else{
+                    str += parseInt(H[i]-1, 10).toString(16);
+                }
+        }
+        }
+        return str +": "+hex2a(str)
+    }
+}
+
+    
+function dec(input){
+	document.getElementById("Dec").style.color = "black";
+    if (input == ""){
+        return ""
+    }else{
+    var H = input.match(/\d+/g);
+	if (H == null){
+		greyout("Dec")
+		return ""}
+    var i;
+    str = "";
+    for (i = 0; i < H.length; i++){
+        str += String.fromCharCode(H[i]);
+		}
+    }
+    return str
+    }
+    
+function oct1(input){
+	document.getElementById("Oct").style.color = "black";
+    if (input == ""){
+        return ""
+    }else{
+    var H = input.match(/\d+/g);
+	if (H == null){
+		greyout("Oct");
+		return ""}
+    str = "";
+    for (i = 0; i < H.length; i++){
+        //str += parseInt(H[i], 8).toString(16);
+		str += String.fromCharCode(parseInt(H[i],8));
+        }
+    }
+    return str
+    }
+
+function morse(input){
+	document.getElementById("morse").style.color = "black";
+    document.getElementById("morseHeading1").innerHTML = "";
+	if (input == ""){
+        return ""
+    }
+
+    if (input.match(/[^('"/, )]+/gi) == null){
+    	return ""
+    }
+    var array = input.match(/[^('"/, )]+/gi);
+
+    var set1 = new Set(array.join().replaceAll(",",""));
+
+    if (set1.size > 2){
+    	document.getElementById("morse").style.color = "lightgrey";
+    	return ""
+   
+   }else{// Solve the morse.
+    	var setArray = Array.from(set1);
+    	var a = setArray[0];
+    	var b = setArray[1];
+
+    	dict = {
+    		".-"   : "A",
+    		"-..." : "B",
+    		"-.-." : "C",
+            "-.."  : "D",
+            "."    : "E",
+            "..-."    : "F",
+            "--."    : "G",
+            "...."    : "H",
+            ".."    : "I",
+            ".---"    : "J",
+            "-.-"    : "K",
+            ".-.."    : "L",
+    		"--"   : "M",
+            "-."    : "N",
+            "---"    : "O",
+            ".--."    : "P",
+            "--.-"    : "Q",
+            ".-."    : "R",
+            "..."    : "S",
+    		"-"   : "T",
+            "..-"    : "U",
+            "...-"    : "V",
+            ".--"    : "W",
+            "-..-"    : "X",
+            "-.--"    : "Y",
+            "--.."    : "Z",
+            ".-.-.-"  : ".",
+            "--..--"  : ",",
+            "..--.."  : "?",
+            "-.-.--"  : "!",
+            ".----."  : "'",
+            ".-..-."  : "\"",
+            "-.--."   : "(",
+            "-.--.-"  : ")",
+            ".-..."   : "&",
+            "---..."  : ":",
+            "-.-.-."  : ";",
+            "-..-."   : "/",
+            "..--.-"  : "_",
+            "-...-"   : "=",
+            ".-.-."   : "+",
+            "-....-"  : "-",
+            "...-..-" : "$",
+            ".--.-."  : "@"
+    	}
+    	var str = "";
+    	if (b == null){
+            for (i = 0; i < array.length; i++){
+                if ((a == ".") || (a == "-")){
+                    var char = array[i].replaceAll(a,'0');
+                    var char = char.replaceAll('0','.');
+                }else{
+                    var char = array[i].replaceAll(a,'.');
+                }
+                var letter = dict[char];
+                if (letter == null){
+                    str += " ";
+                }else{
+                  str += letter;
+                }
+            }
+        }else{
+            for (i = 0; i < array.length; i++){
+        		if ((a == ".") || (a == "-") || (b == "-") || (b == ".")){
+        			var char = array[i].replaceAll(a,'0').replaceAll(b,'1');
+        			var char = char.replaceAll('0','.').replaceAll('1','-');
+        		}else{
+        			var char = array[i].replaceAll(a,'.').replaceAll(b,'-');
+        		}
+        		var letter = dict[char];
+                if (letter == null){
+                    str += " ";
+                }else{
+        		  str += letter;
+                }
+        	}
+        }
+    }
+
+    if (a == null){
+        a = "n/a";
+    }if (b == null){
+        b = "n/a";
+    }
+    document.getElementById("morseHeading1").innerHTML = "Dot = "+a+"   Dash = "+b;
+	return str
+}
+
+function morse2(input){
+    document.getElementById("morseHeading2").innerHTML = "";
+    if (input == ""){
+        return ""
+    }
+
+    if (input.match(/[^('"/, )]+/gi) == null){
+        return ""
+    }
+    var array = input.match(/[^('"/, )]+/gi);
+
+    var set1 = new Set(array.join().replaceAll(",",""));
+
+    if (set1.size > 2){
+        return ""
+   
+   }else{// Solve the morse.
+        var setArray = Array.from(set1);
+        var a = setArray[0];
+        var b = setArray[1];
+
+                dict = {
+            ".-"   : "A",
+            "-..." : "B",
+            "-.-." : "C",
+            "-.."  : "D",
+            "."    : "E",
+            "..-."    : "F",
+            "--."    : "G",
+            "...."    : "H",
+            ".."    : "I",
+            ".---"    : "J",
+            "-.-"    : "K",
+            ".-.."    : "L",
+            "--"   : "M",
+            "-."    : "N",
+            "---"    : "O",
+            ".--."    : "P",
+            "--.-"    : "Q",
+            ".-."    : "R",
+            "..."    : "S",
+            "-"   : "T",
+            "..-"    : "U",
+            "...-"    : "V",
+            ".--"    : "W",
+            "-..-"    : "X",
+            "-.--"    : "Y",
+            "--.."    : "Z",
+            ".-.-.-"  : ".",
+            "--..--"  : ",",
+            "..--.."  : "?",
+            "-.-.--"  : "!",
+            ".----."  : "'",
+            ".-..-."  : "\"",
+            "-.--."   : "(",
+            "-.--.-"  : ")",
+            ".-..."   : "&",
+            "---..."  : ":",
+            "-.-.-."  : ";",
+            "-..-."   : "/",
+            "..--.-"  : "_",
+            "-...-"   : "=",
+            ".-.-."   : "+",
+            "-....-"  : "-",
+            "...-..-" : "$",
+            ".--.-."  : "@"
+        }
+        var str = "";
+        if (b == null){
+            for (i = 0; i < array.length; i++){
+                if ((a == "-") || (a == ".")){
+                    var char = array[i].replaceAll(a,'0');
+                    var char = char.replaceAll('0','-');
+                }else{
+                    var char = array[i].replaceAll(a,'-');
+                }
+                var letter = dict[char];
+                if (letter == null){
+                    str += " ";
+                }else{
+                  str += letter;
+                }
+            }
+        }else{
+            for (i = 0; i < array.length; i++){
+                if ((a == "-") || (a == ".") || (b == ".") || (b == "-")){
+                    var char = array[i].replaceAll(a,'0').replaceAll(b,'1');
+                    var char = char.replaceAll('0','-').replaceAll('1','.');
+                }else{
+                    var char = array[i].replaceAll(a,'-').replaceAll(b,'.');
+                }
+                var letter = dict[char];
+                if (letter == null){
+                    str += " ";
+                }else{
+                  str += letter;
+                }
+            }
+        }
+    }
+
+    if (a == null){
+        a = "n/a";
+    }if (b == null){
+        b = "n/a";
+    }
+    document.getElementById("morseHeading2").innerHTML = "Dot = "+b+"   Dash = "+a;
+    return str
+}
+
+function A1Z26(input){
+	document.getElementById("A1Z26").style.color = "black";
+	if (input == ""){
+        return ""
+    }else{
+	
+	if (input.match(/-?\d+/g) == null && input.match(/[a-zA-Z]+/g) != null ){
+		var str = "";
+		var H = input.replace(/[^a-zA-Z]+/g,'');
+		var alpha = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+		for (i = 0; i < H.length; i++){
+			var upper = H[i].toUpperCase()
+			str += (alpha.indexOf(upper)+1).toString() + " ";
+		}
+		return str
+	}
+	var H = input.match(/-?\d+/g);
+		if (H == null){
+			document.getElementById("A1Z26").style.color = "lightgrey";
+			return ""}
+	var alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+	var str = "";
+	for (i = 0; i < H.length; i++){
+        str += alphabet[mod(parseInt((H[i]) - 1),26)];
+    }
+	return str
+	}
+}
+	
+function Atbash(input){
+	document.getElementById("Atbash").style.color = "black";
+	if (input == ""){
+        return ""
+    }else{
+		if (input.match(/[a-zA-Z]/g) == null){
+			var H = input.match(/-?\d+/g);
+			if (H == null){
+				greyout("Atbash");
+				return ""}
+			var str = '';
+			var alpha = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+			var balpha = reverseString(alpha);
+			for (i = 0; i < H.length; i++){
+        		str += balpha[mod(parseInt((H[i]) - 1),26)];
+        	}
+			return str
+			
+			
+			
+		}else{
+			
+		var alpha = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+		var balpha = reverseString(alpha);
+		
+		var str = '';
+		for (i = 0; i < input.length; i++){
+			if (input[i].match(/[a-zA-Z]/g) == input[i]){
+			
+				var C = input[i].toUpperCase();
+				var index  = alpha.indexOf(C);
+    			if (C == input[i]){
+        		var U = "true";
+    			}else{
+        		var U = "false"
+    			}
+				if (U=="true"){
+					str += balpha[index];
+				}else{
+					str += balpha[index].toLowerCase()
+				}
+			}else{
+				str += input[i];
+			}
+		}}
+		return str
+	}		
+}
+	
+function bacon1(input){
+	document.getElementById("Bacon").style.color = "black";
+	if (input == ""){
+        return ""
+    }else{
+		var str = input.replace(/\s/g,'');
+		var set1 = new Set(str);
+		//return set1
+
+        if(set1.size > 2){
+            //remove special characters
+            str = str.replace(/[^a-z0-9]/gi,'')
+            set1 = new Set(str);
+        }
+
+		if (set1.size < 3){
+			var array = Array.from(set1);
+
+			var a = array[0];
+            var b = array[1];
+
+            if ((a == "0") || (a == "1") || (b == "0") || (b == "1")){//Shocking code, I know; but it works.
+                var bin = str.replaceAll(a,'x').replaceAll(b,'y');
+                var bin = bin.replaceAll('x','0').replaceAll('y','1');
+            }else{
+                var bin = str.replaceAll(a,'0');
+                var bin = bin.replaceAll(b,'1');
+            }
+            var i;
+			var string = "";
+			if (bin == ""){
+				return ""
+			}
+			str = bin.match(/.{1,5}/g).join(" ");
+			var newBinary = str.split(" ");
+    		var binaryCode = [];
+			var dict = 'abcdefghiklmnopqrstuwxyz'
+			
+    		for (i = 0; i < newBinary.length; i++) {
+        		var num = parseInt(newBinary[i],2).toString();
+				if (num > 23){
+					string += " "
+				}else{
+					string += dict[num];
+				}
+    			
+			}
+			return string
+			
+		}else{
+			greyout("Bacon");
+			return ""
+		}
+		}
+	}
+	
+function bacon2(input){
+	if (input == ""){
+        return ""
+    }else{
+		var str = input.replace(/\s/g,'');
+		var set1 = new Set(str);
+
+        if(set1.size > 2){
+            //remove special characters
+            str = str.replace(/[^a-z0-9]/gi,'')
+            set1 = new Set(str);
+        }
+
+		if (set1.size < 3){
+			var array = Array.from(set1);
+
+            var a = array[0];
+            var b = array[1];
+
+            if ((a == "0") || (a == "1") || (b == "0") || (b == "1")){//Shocking code, I know; but it works.
+                var bin = str.replaceAll(a,'x').replaceAll(b,'y');
+                var bin = bin.replaceAll('x','1').replaceAll('y','0');
+            }else{
+                var bin = str.replaceAll(a,'1');
+                var bin = bin.replaceAll(b,'0');
+            }
+            var i;
+			var string = "";
+			if (bin == ""){
+				return ""
+			}
+			str = bin.match(/.{1,5}/g).join(" ");
+			var newBinary = str.split(" ");
+    		var binaryCode = [];
+			var dict = 'abcdefghiklmnopqrstuwxyz'
+			
+    		for (i = 0; i < newBinary.length; i++) {
+        		var num = parseInt(newBinary[i],2).toString();
+				if (num > 23){
+					string += " "
+				}else{
+					string += dict[num];
+				}
+    			
+			}
+			return string
+			
+		}else{
+			return ""
+		}
+		}
+	}
+	
+function ASCII1(input){
+	document.getElementById("ASCII").style.color = "black";
+	if (input == ""){
+        return ""
+    }else{
+		
+		var str = input.replace(/\s/g,''); //str should be a long joined string
+		var set1 = new Set(str);
+
+        if(set1.size > 2){
+            //remove special characters
+            str = str.replace(/[^a-z0-9]/gi,'')
+            set1 = new Set(str);
+        }
+
+		if (set1.size < 3){
+			var array = Array.from(set1);
+
+            var a = array[0];
+            var b = array[1];
+
+            if ((a == "0") || (a == "1") || (b == "0") || (b == "1")){//Shocking code, I know; but it works.
+                var bin = str.replaceAll(a,'x').replaceAll(b,'y');
+                var bin = bin.replaceAll('x','0').replaceAll('y','1');
+            }else{
+    			var bin = str.replaceAll(a,'0');
+    			var bin = bin.replaceAll(b,'1');
+		    }
+			var i;
+			if (bin == ""){
+				return ""
+			}
+			str = bin.match(/.{1,8}/g).join(" ");
+			
+
+    		var newBinary = str.split(" ");
+    		var binaryCode = [];
+
+    		for (i = 0; i < newBinary.length; i++) {
+        		binaryCode.push(String.fromCharCode(parseInt(newBinary[i], 2)));
+    		}
+    
+    		return binaryCode.join("");
+			}
+		
+		else{
+			greyout("ASCII");
+			return ""
+		}
+	}
+}
+
+function ASCII2(input){
+	if (input == ""){
+        return ""
+    }else{
+		var str = input.replace(/\s/g,'');
+		var set1 = new Set(str);
+
+    if(set1.size > 2){
+        //remove special characters
+        str = str.replace(/[^a-z0-9]/gi,'')
+        set1 = new Set(str);
+    }
+
+	if (set1.size < 3){
+		var array = Array.from(set1);
+
+        a = array[0];
+        b = array[1];
+
+        if ((a == "0") || (a == "1") || (b == "0") || (b == "1")){//Shocking code, I know; but it works.
+            var bin = str.replaceAll(a,'x').replaceAll(b,'y');
+            var bin = bin.replaceAll('x','1').replaceAll('y','0');
+        }else{
+            var bin = str.replaceAll(a,'1');
+            var bin = bin.replaceAll(b,'0');
+        }
+		
+		var i;
+		if (bin == ""){
+				return ""
+			}
+		str = bin.match(/.{1,8}/g).join(" ");
+
+    	var newBinary = str.split(" ");
+    	var binaryCode = [];
+
+    	for (i = 0; i < newBinary.length; i++) {
+        	binaryCode.push(String.fromCharCode(parseInt(newBinary[i], 2)));
+    	}
+    
+    	return binaryCode.join("");
+		
+	}else{
+		return ""
+	}
+	}
+}
+
+function affineEncodeFun(input,a,b){
+    document.getElementById("affineDiv").style.color = "black";
+    blackout("affineOutputs")
+    if (input == ""){
+    	return ""
+    }
+    if (input.match(/[a-z]/gi) == null){
+        greyout('affineDiv');
+        greyout("affineOutputs")
+        return ""
+    }
+    if (a == "" || b == ""){
+        greyout("affineOutputs")
+    	return ""
+    }else{
+    	if (a.match(/[^0-9]+/gi) != null || a.match(/[^0-9]+/gi) != null){
+    		return "a and b must be numbers"
+    	}
+    	a = parseInt(a);
+		b = parseInt(b);
+    	var alphabet = "abcdefghijklmnopqrstuvwxyz";
+    	var ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    	var lowerInput = input.toLowerCase();
+    	var str = "";
+    	for (i = 0; i < input.length; i++){
+        	if(input[i] == input[i].replace(/[^a-z]/gi,'')){
+        		var x  = lowerInput[i];
+        		var xi = alphabet.indexOf(x);
+        		var ci = mod((a*xi + b),26);
+
+        		if (input[i] == input[i].toLowerCase()){
+                	str += alphabet[ci];
+        		}else{
+                	str += ALPHABET[ci];
+        		}
+        
+            }else{
+        		str += input[i];
+            }
+        }
+
+    }
+    return str   
+}
+
+function affineDecodeFun(input,a,b){
+	if (input == ""){
+    	return ""
+    }
+    if (a == "" || b == ""){
+    	return ""
+    }else{
+
+    	if (a.match(/[^0-9]+/gi) != null || a.match(/[^0-9]+/gi) != null){
+    		return "a and b must be numbers"
+    	}
+    	//Find the multiplicative modular inverse (mmi)
+    	a = parseInt(a);
+		b = parseInt(b);
+		function modInv(a) {
+  		// validate inputs
+  			var m = 26;
+  			[a, m] = [Number(a), Number(m)]
+  			if (Number.isNaN(a) || Number.isNaN(m)) {
+    			return NaN // invalid input
+  			}
+  			a = (a % m + m) % m
+  			if (!a || m < 2) {
+    			return NaN // invalid input
+  			}
+  			// find the gcd
+  			const s = []
+  			let b = m
+  			while(b) {
+    			[a, b] = [b, a % b]
+    			s.push({a, b})
+  			}
+  			if (a !== 1) {
+    			return NaN // inverse does not exists
+  			}
+  			// find the inverse
+  			let x = 1
+  			let y = 0
+  			for(let i = s.length - 2; i >= 0; --i) {
+    			[x, y] = [y,  x - y * Math.floor(s[i].a / s[i].b)]
+  			}
+  			return (y % m + m) % m
+		}
+		aInv = modInv(a);
+		
+		if (Number.isNaN(aInv)){
+			return "Invalid value for 'a'. 'a' must not share any factors with 26.".fontcolor("red")
+		}else{
+			var lowerInput = input.toLowerCase();
+	    	var str = "";
+	    	var alphabet = "abcdefghijklmnopqrstuvwxyz";
+	    	var ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+	    	for (i = 0; i < input.length; i++){
+	        	if(input[i] == input[i].replace(/[^a-z]/gi,'')){
+	        		var x  = lowerInput[i];
+	        		var xi = alphabet.indexOf(x);
+	        		var mi = mod((aInv*(xi - b)),26);	
+	        		if (input[i] == input[i].toLowerCase()){
+	                	str += alphabet[mi];
+	        		}else{
+	                	str += ALPHABET[mi];
+	        		}
+	        
+	            }else{
+	        		str += input[i];
+	            }
+	        }
+    	}
+	}
+	return str
+}
+
+	
+function formatString(input, separator){
+	if (input == ""){
+        return ""
+    }else{
+    	if (input.match(/[a-zA-Z0-9]+/gi) == null){
+    		return ""
+    	}
+    	if (input.match(/[a-zA-Z0-9]+/gi).length == 1){//if one block string
+    		var str = input.match(/[a-zA-Z0-9]/gi);
+            if (separator == ""){
+                separator = ","
+            }
+    	}else{
+    	var str = input.match(/[a-zA-Z0-9]+/gi);
+    	}
+    	return str.join(separator)
+    }
+}
+	
+document.getElementById('container').oninput = function () {
+    var input = document.getElementById('input1').value;
+    //Caesar
+    var output = grandShift(input)
+    document.getElementById('output').innerHTML = output;
+    //Vigenere
+    var key = document.getElementById('key').value;
+    var vigOutput = vig(input,key)
+    document.getElementById('vigOutput').innerHTML = vigOutput;
+    var vigOutput2 = vig2(input, key)
+    document.getElementById('vigOutput2').innerHTML = vigOutput2;
+    //Hex
+    var hexOutput1 = hex1(input);
+    document.getElementById('hexOutput1').innerHTML = hexOutput1;
+    
+    var hexNum1Output = hexNum1(input);
+    document.getElementById('hexNum1Output').innerHTML = hexNum1Output;
+    var hexNum2Output = hexNum2(input);
+    document.getElementById('hexNum2Output').innerHTML = hexNum2Output;
+	
+    var hexbOutput = hex2b(input);
+	document.getElementById('hexb').innerHTML = hexbOutput;
+	//Dec
+	var decOutput1 = dec(input);
+    document.getElementById('decOutput1').innerHTML = decOutput1;
+    //Oct
+    var octOutput1 = oct1(input);
+    document.getElementById('octOutput1').innerHTML = octOutput1;
+    //Morse
+    var morseOutput = morse(input);
+    document.getElementById('morseOutput').innerHTML = morseOutput;
+    var morse2Output = morse2(input);
+    document.getElementById('morse2Output').innerHTML = morse2Output;
+	//A1Z26
+   	var A1Z26Output = A1Z26(input);
+	document.getElementById('A1Z26Output').innerHTML = A1Z26Output;
+	//Atbash
+	var AtbashOutput = Atbash(input);
+	document.getElementById('AtbashOutput').innerHTML = AtbashOutput;
+	//ASCII
+	var ASCIIOutput1 = ASCII1(input);
+	document.getElementById('ASCIIOutput1').innerHTML = ASCIIOutput1;
+	var ASCIIOutput2 = ASCII2(input);
+	document.getElementById('ASCIIOutput2').innerHTML = ASCIIOutput2;
+	//Bacon
+	var baconOutput1 = bacon1(input);
+	document.getElementById('baconOutput1').innerHTML = baconOutput1;
+	var baconOutput2 = bacon2(input);
+	document.getElementById('baconOutput2').innerHTML = baconOutput2;
+	//Autokey
+	var autokeyEncoded = autokeyEncode(input, key);
+	document.getElementById('autokeyEncoded').innerHTML = autokeyEncoded;
+	var autokeyDecoded = autokeyDecode(input, key);
+	document.getElementById('autokeyDecoded').innerHTML = autokeyDecoded;
+	//Beaufort
+	var beaufortEncoded = beaufortEncode(input, key);
+	document.getElementById('beaufortEncoded').innerHTML = beaufortEncoded;
+	//Affine
+	var a = document.getElementById('affineA').value;
+	var b = document.getElementById('affineB').value;
+	var affineEncoded = affineEncodeFun(input,a,b);
+	document.getElementById('affineEncodedOutput').innerHTML = affineEncoded;
+	var affineDecoded = affineDecodeFun(input,a,b);
+	document.getElementById('affineDecodedOutput').innerHTML = affineDecoded;
+	//Format String
+	var separator = document.getElementById('separator').value;
+	var FormatString = formatString(input, separator);
+	document.getElementById('FormatStringOutput').innerHTML = FormatString;
+    //TEST
+
+}
+    
+</script>
+</body>
+</html>
